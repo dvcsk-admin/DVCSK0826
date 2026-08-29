@@ -1,4 +1,4 @@
-                <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hu">
 <head>
     <meta charset="UTF-8">
@@ -215,12 +215,9 @@
     }
 
     #map {
-    width: 100%;
-    height: 100%;
-    min-height: 350px; /* Biztosítja, hogy mobilon se csukódjon össze 0 pixelre */
-    background: #e0e0e0; /* Szürke háttér, amíg tölt a térkép */
-}
-
+        width: 100%;
+        height: 100%;
+        background: #e0e0e0;
     }
 
     @media (max-width: 1024px) {
@@ -229,7 +226,7 @@
         .incident-panel, .chat-panel, .map-panel { width: 100%; height: 450px; }
     }
 </style>
-    
+  
 </head>
 <body>
 
@@ -294,28 +291,27 @@
 <script>
     let incidents = [];
     let map;
-let currentMarker = null;
+    let currentMarker = null;
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('incidentForm').addEventListener('submit', addIncident);
-    document.getElementById('sendChatBtn').addEventListener('click', sendToChatGPT);
-    document.getElementById('chatInput').addEventListener('keypress', handleChatKeyPress);
-    
-    // Térkép elindítása
-    map = L.map('map').setView([47.1625, 19.5033], 7);
-    
-    // Ingyenes OpenStreetMap csempék behívása
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById('incidentForm').addEventListener('submit', addIncident);
+        document.getElementById('sendChatBtn').addEventListener('click', sendToChatGPT);
+        document.getElementById('chatInput').addEventListener('keypress', handleChatKeyPress);
+        
+        // Biztonságos térkép indítás
+        map = L.map('map').setView([47.1625, 19.5033], 7);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
 
-    // Kifejezetten mobilokhoz: kényszerített méret-újraszámítás betöltés után
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 500);
+        // Kényszerített méret-újraszámítás a mobilok miatt
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 800);
 
-    renderIncidents();
-});
+        renderIncidents();
+    });
 
     function renderIncidents() {
         const listContainer = document.getElementById('incidentList');
@@ -352,6 +348,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 map.setView([lat, lon], 14);
                 if (currentMarker) map.removeLayer(currentMarker);
                 currentMarker = L.marker([lat, lon]).addTo(map).bindPopup(`<b>Helyszín:</b><br>${address}`).openPopup();
+                
+                setTimeout(() => { map.invalidateSize(); }, 200);
             }
         } catch (error) {
             console.error(error);
@@ -423,7 +421,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleChatKeyPress(e) {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendToChatGPT(); }
     }
-                </script>
-    
+                                                              </script>
+  
 </body>
 </html>
+
+                    
